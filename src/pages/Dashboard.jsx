@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 const Dashboard = () => {
   const navigate = useNavigate();
   const [movies, setMovies] = useState([]);
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState("Avengers");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -14,23 +14,24 @@ const Dashboard = () => {
   const token = localStorage.getItem("token");
   const user = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null;
 
-  // Initial fetch on component mount
   useEffect(() => {
-    if (token) {
-      fetchMovies("Avengers", 1); // Default search
+    if (!token) {
+      navigate("/auth");
+    } else {
+      fetchMovies(query, page); // initial fetch
     }
   }, [token]);
 
   const fetchMovies = async (searchTerm = "Avengers", pageNum = 1) => {
     setLoading(true);
     try {
-      const response = await axios.get(
+      const res = await axios.get(
         `https://api.themoviedb.org/3/search/movie?api_key=${
           import.meta.env.VITE_TMDB_API_KEY
         }&query=${searchTerm}&page=${pageNum}`
       );
-      setMovies(response.data.results);
-      setTotalPages(response.data.total_pages);
+      setMovies(res.data.results || []);
+      setTotalPages(res.data.total_pages || 1);
       setPage(pageNum);
     } catch (err) {
       console.error("Error fetching movies:", err);
@@ -54,24 +55,9 @@ const Dashboard = () => {
 
   const goToPage = (newPage) => {
     if (newPage > 0 && newPage <= totalPages) {
-      fetchMovies(query || "Avengers", newPage);
+      fetchMovies(query, newPage);
     }
   };
-
-  if (!token) {
-    return (
-      <div className="min-h-screen bg-gray-950 flex flex-col items-center justify-center text-white">
-        <h2 className="text-2xl font-bold mb-4">Access Denied</h2>
-        <p className="mb-4 text-gray-400">You must be logged in to view the dashboard.</p>
-        <button
-          onClick={() => navigate("/auth")}
-          className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-white"
-        >
-          Go to Login
-        </button>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-950 text-white">
@@ -111,12 +97,11 @@ const Dashboard = () => {
           </button>
         </form>
 
-        {/* Loading State */}
+        {/* Movie List */}
         {loading ? (
           <div className="text-center text-gray-400 animate-pulse">Loading movies...</div>
         ) : movies.length > 0 ? (
           <>
-            {/* Movie Grid */}
             <motion.div
               className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5"
               initial={{ opacity: 0 }}

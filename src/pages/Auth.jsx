@@ -17,6 +17,13 @@ const Auth = () => {
   const [posterIndex, setPosterIndex] = useState(0);
   const navigate = useNavigate();
 
+  // If user is already logged in, redirect them to dashboard
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) navigate('/');
+  }, [navigate]);
+
+  // Change background poster every 5 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       setPosterIndex((prev) => (prev + 1) % posters.length);
@@ -48,16 +55,13 @@ const Auth = () => {
 
       if (!isRegister) {
         localStorage.setItem('token', res.data.token);
-        localStorage.setItem(
-          'user',
-          JSON.stringify({
-            name: res.data.name,
-            email: res.data.email,
-            _id: res.data._id,
-          })
-        );
+        localStorage.setItem('user', JSON.stringify({
+          name: res.data.name,
+          email: res.data.email,
+          _id: res.data._id,
+        }));
         alert('Login successful!');
-        navigate('/dashboard'); // 🔁 Redirect to dashboard
+        navigate('/'); // Redirect to dashboard
       } else {
         alert(res.data.message || 'User registered successfully');
         setIsRegister(false);
@@ -149,4 +153,3 @@ const Auth = () => {
 };
 
 export default Auth;
-// movie-recommendation-app/frontend/src/pages/Auth.jsx 
