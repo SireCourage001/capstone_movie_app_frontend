@@ -17,7 +17,6 @@ const Auth = () => {
   const [posterIndex, setPosterIndex] = useState(0);
   const navigate = useNavigate();
 
-  // Rotate background posters every 5 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       setPosterIndex((prev) => (prev + 1) % posters.length);
@@ -49,13 +48,16 @@ const Auth = () => {
 
       if (!isRegister) {
         localStorage.setItem('token', res.data.token);
-        localStorage.setItem('user', JSON.stringify({
-          name: res.data.name,
-          email: res.data.email,
-          _id: res.data._id,
-        }));
+        localStorage.setItem(
+          'user',
+          JSON.stringify({
+            name: res.data.name,
+            email: res.data.email,
+            _id: res.data._id,
+          })
+        );
         alert('Login successful!');
-        navigate('/');
+        navigate('/dashboard'); // 🔁 Redirect to dashboard
       } else {
         alert(res.data.message || 'User registered successfully');
         setIsRegister(false);
@@ -74,9 +76,7 @@ const Auth = () => {
           filter: 'brightness(0.3)',
         }}
       />
-
       <div className="absolute inset-0 bg-black bg-opacity-60 z-10" />
-
       <div className="z-20 w-full max-w-md p-8 bg-gray-800 bg-opacity-90 rounded-lg shadow-lg backdrop-blur">
         <h2 className="text-2xl font-bold text-center mb-6">
           {isRegister ? 'Register' : 'Login'}
@@ -149,4 +149,4 @@ const Auth = () => {
 };
 
 export default Auth;
-// movie-recommendation-app/frontend/src/pages/Auth.jsx
+// movie-recommendation-app/frontend/src/pages/Auth.jsx 

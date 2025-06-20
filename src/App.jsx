@@ -8,9 +8,17 @@ function App() {
 
   return (
     <Routes>
-      <Route path="/" element={token ? <Dashboard /> : <Navigate to="/auth" />} />
+      {/* Protected Home Route */}
+      <Route path="/" element={token ? <Dashboard /> : <Navigate to="/auth" replace />} />
+
+      {/* Auth Route */}
       <Route path="/auth" element={<Auth />} />
-      <Route path="/movie/:id" element={<MovieDetail />} />
+
+      {/* Movie Details Route */}
+      <Route path="/movie/:id" element={token ? <MovieDetail /> : <Navigate to="/auth" replace />} />
+
+      {/* Fallback: Redirect unknown routes to auth or dashboard based on auth status */}
+      <Route path="*" element={<Navigate to={token ? "/" : "/auth"} replace />} />
     </Routes>
   );
 }

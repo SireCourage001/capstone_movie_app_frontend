@@ -14,9 +14,10 @@ const Dashboard = () => {
   const token = localStorage.getItem("token");
   const user = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null;
 
+  // Initial fetch on component mount
   useEffect(() => {
     if (token) {
-      fetchMovies("Avengers", 1); // default query
+      fetchMovies("Avengers", 1); // Default search
     }
   }, [token]);
 
@@ -110,7 +111,7 @@ const Dashboard = () => {
           </button>
         </form>
 
-        {/* Loading */}
+        {/* Loading State */}
         {loading ? (
           <div className="text-center text-gray-400 animate-pulse">Loading movies...</div>
         ) : movies.length > 0 ? (
@@ -131,7 +132,11 @@ const Dashboard = () => {
                   onClick={() => navigate(`/movie/${movie.id}`)}
                 >
                   <img
-                    src={`https://image.tmdb.org/t/p/w300${movie.poster_path}`}
+                    src={
+                      movie.poster_path
+                        ? `https://image.tmdb.org/t/p/w300${movie.poster_path}`
+                        : "https://via.placeholder.com/300x450?text=No+Image"
+                    }
                     alt={movie.title}
                     className="w-full h-[250px] object-cover"
                   />
@@ -173,5 +178,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-// This code defines a Dashboard component for a movie recommendation app.
-// It includes a search bar, displays a grid of movies, and handles pagination. 
